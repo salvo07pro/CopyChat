@@ -37,7 +37,8 @@ const CopyChatStorage = {
         let intent = 'general';
 
         // Intent detection
-        if (lower.includes('manchi') || lower.includes('amore') || lower.includes('ti amo') || lower.includes('cuore')) intent = 'emotional';
+        if (lower.includes('ti amo') || lower.includes('voglio bene') || lower.includes('tesoro')) intent = 'love';
+        else if (lower.includes('manchi') || lower.includes('cuore')) intent = 'emotional';
         else if (lower.includes('lasciare') || lower.includes('basta') || lower.includes('odio') || lower.includes('arrabbiato')) intent = 'conflict';
         else if (lower.includes('giocare') || lower.includes('game') || lower.includes('partita')) intent = 'gaming';
         else if (lower.includes('invito') || lower.includes('uscire') || lower.includes('cena')) intent = 'invitation';
@@ -99,11 +100,17 @@ const CopyChatStorage = {
                 ],
                 cold: ["Ricevuto. Lo so.", "Va bene.", "Capito.", "Sì, anche qui."]
             },
+            love: {
+                gentle: ["Anch'io ti voglio bene. Sei una persona davvero speciale per me.", "Le tue parole mi scaldano il cuore. Grazie di esserci.", "Sei il mio pensiero più bello. Ti voglio un bene immenso."],
+                pro: ["Ricambio sinceramente il tuo affetto. La nostra intesa è molto importante.", "Apprezzo molto la tua dichiarazione. Procediamo insieme con fiducia.", "Il tuo sentimento è prezioso. Farò del mio meglio per onorarlo."],
+                funny: ["Attenzione: rilevata eccessiva dose di dolcezza. Mi fai arrossire i circuiti!", "Sei un romanticone irrecuperabile! Ma confesso che mi piace.", "Così mi fai sciogliere! Mi servirebbe un ventilatore per la commozione."],
+                cold: ["Ricevuto.", "Bene.", "Capito.", "Ok."]
+            },
             general: {
                 gentle: [
                     "Che bella cosa! Raccontami pure i dettagli, ti ascolto con tutto l'interesse del mondo.",
                     "Sembra un'ottima iniziativa, sono assolutamente d'accordo con te. Procediamo pure!",
-                    "Capico perfettamente quello che provi, sembra una scelta molto saggia e ponderata.",
+                    "Capisco perfettamente quello che provi, sembra una scelta molto saggia e ponderata.",
                     "Sono così felice di sentirti! Dimmi tutto, sono qui per darti supporto."
                 ],
                 pro: [
@@ -129,21 +136,22 @@ const CopyChatStorage = {
             const list = category[t] || category.gentle;
             let resp = list[Math.floor(Math.random() * list.length)];
 
+            let analysis = null;
             if (tier === 'premium_plus') {
                 const psycho = {
-                    urgent: "[UnStuck Analysis: Stato di urgenza/ansia elevato]",
-                    positive: "[UnStuck Analysis: Mood positivo ed entusiasta]",
-                    negative: "[UnStuck Analysis: Tone deluso o critico]",
-                    emotional: "[UnStuck Analysis: Forte legame affettivo/nostalgia]",
-                    neutral: "[UnStuck Analysis: Comunicazione neutra/informativa]"
+                    urgent: "Stato di urgenza o ansia elevato",
+                    positive: "Mood positivo ed entusiasta",
+                    negative: "Tone deluso o critico",
+                    emotional: "Forte legame affettivo o nostalgia",
+                    love: "Dichiarazione affettiva profonda",
+                    neutral: "Comunicazione neutra o informativa"
                 };
-                const prefix = psycho[context.intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
-                resp = `${prefix} ${resp}`;
+                analysis = psycho[context.intent] || psycho[context.sentiment] || psycho.neutral;
             }
 
             // Add a label for the user to understand the tone context
             const labels = { gentle: 'Gentile', pro: 'Professionale', funny: 'Simpatico', cold: 'Distaccato' };
-            return { text: resp, label: labels[t] };
+            return { text: resp, label: labels[t], analysis: analysis };
         });
 
         return finalResponses;

@@ -196,10 +196,15 @@ async function handleGenerate() {
         btn.disabled = false;
 
         results.innerHTML = responses.map(resp => `
-            <div class="response-card" style="border-left: 4px solid var(--primary);">
-                <div style="font-size: 0.6rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Stile: ${resp.label}</div>
-                <div class="copy-hint">Copia</div>
-                <p style="margin: 0; line-height: 1.4;">${resp.text}</p>
+            <div class="response-card" style="border-left: 4px solid var(--primary); padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-size: 0.7rem; color: var(--primary); font-weight: 800; text-transform: uppercase;">${resp.label}</span>
+                    <span class="copy-hint" style="position: static; font-size: 0.7rem;">Copia</span>
+                </div>
+                
+                ${resp.analysis ? `<div style="background: var(--primary-glow); color: var(--primary); font-size: 0.65rem; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; display: inline-block; font-weight: 600;">Analisi: ${resp.analysis}</div>` : ''}
+                
+                <p style="margin: 0; line-height: 1.5; font-size: 1rem;">${resp.text}</p>
             </div>
         `).join('');
     } catch (error) {
