@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CopyChatt - Risposte Smart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/index.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+</head>
+
+<body>
+    <div id="app"></div>
+    <!-- Scripts relative to www/ folder -->
+    <script src="src/utils/storage.js"></script>
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+
+        // Check if scripts loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof CopyChatStorage === 'undefined') {
+                document.getElementById('app').innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: white; background: #020617; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+                        <h2 style="color: #ef4444;">Errore di Caricamento</h2>
+                        <p style="color: #94a3b8; margin-top: 10px;">Non riesco a caricare i file di logica. Se stai aprendo il file direttamente dal computer, prova a usare un server locale (come Live Server di VS Code) o compila per Android.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

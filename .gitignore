@@ -1,0 +1,6 @@
+﻿node_modules/
+android/app/build/
+www/src/utils/config.js
+.idea/
+.DS_Store
+*.apk
