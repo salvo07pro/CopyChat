@@ -1,14 +1,6 @@
 const app = document.getElementById('app');
 let state = CopyChatStorage.getStorageData();
 let currentView = 'main'; // 'main', 'profile', 'pricing'
-let selectedTone = 'gentle';
-
-const TONES = [
-    { id: 'gentle', label: 'Gentile', icon: '😊', premium: false },
-    { id: 'pro', label: 'Pro', icon: '💼', premium: false },
-    { id: 'funny', label: 'Funny', icon: '😂', premium: true },
-    { id: 'cold', label: 'Freddo', icon: '❄️', premium: true }
-];
 
 const LOGO_SVG = `
 <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 10px;">
@@ -66,7 +58,7 @@ function renderMainApp() {
             </div>
             <div class="profile-trigger" id="profileTrigger">
                 ${state.tier !== 'base' ? '<span style="color:var(--premium); font-size:0.8rem;">👑</span>' : ''}
-                <div style="width:20px; height:20px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-size:0.6rem; font-weight:800;">
+                <div style="width:20px; height:20px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:0.6rem; font-weight:800;">
                     ${state.user.name.charAt(0)}
                 </div>
                 <span>${state.user.name}</span>
@@ -74,36 +66,24 @@ function renderMainApp() {
         </header>
 
         <main style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
-            <div class="tone-selector">
-                ${TONES.map(tone => {
-        const isTonePremium = tone.premium && state.tier === 'base';
-        return `
-                        <button class="tone-btn ${selectedTone === tone.id ? 'active' : ''} ${isTonePremium ? 'locked' : ''}" data-id="${tone.id}">
-                            <span>${tone.icon}</span>
-                            <span>${tone.label}</span>
-                        </button>
-                    `;
-    }).join('')}
-            </div>
-
             <section class="input-container">
-                <textarea id="chatInput" placeholder="Incolla il messaggio..."></textarea>
+                <textarea id="chatInput" placeholder="Incolla qui il messaggio a cui vuoi rispondere..."></textarea>
                 <div id="loading" style="display: none; height:4px; background:rgba(255,255,255,0.05); margin-top:10px; border-radius:2px; overflow:hidden;">
                     <div style="width:40%; height:100%; background:var(--primary); animation: load 1s infinite;"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
-                    <div style="font-size: 0.7rem; color: var(--text-secondary);">
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">
                         ${state.tier !== 'base' ? `${state.tier.toUpperCase()} Attivo` : `Gratis: ${state.count}/${usageLimit}`}
                     </div>
-                    <button id="btnGenerate" class="btn-primary" style="width: auto; padding: 10px 24px;" ${isLocked ? 'disabled' : ''}>Genera Smart</button>
+                    <button id="btnGenerate" class="btn-primary" style="width: auto; padding: 10px 24px;" ${isLocked ? 'disabled' : ''}>Genera 4 Opzioni</button>
                 </div>
             </section>
 
             <div id="results" class="results-container"></div>
             
             ${state.tier === 'base' ? `
-            <div style="background: var(--card-bg); padding: 16px; border-radius: 20px; text-align: center; border: 1px dashed var(--premium);">
-                <p style="font-size: 0.75rem; margin-bottom: 8px;">Passa a Premium per risposte illimitate!</p>
+            <div style="background: var(--surface); padding: 16px; border-radius: 20px; text-align: center; border: 1px dashed var(--premium);">
+                <p style="font-size: 0.75rem; margin-bottom: 8px; color: var(--text-muted);">Passa a Premium per risposte illimitate!</p>
                 <button id="goToPricing" style="background: var(--premium); color: black; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 800; font-size: 0.7rem; cursor: pointer;">Piani Upgrade</button>
             </div>
             ` : ''}
@@ -116,19 +96,6 @@ function renderMainApp() {
     if (document.getElementById('goToPricing')) {
         document.getElementById('goToPricing').addEventListener('click', () => { currentView = 'pricing'; render(); });
     }
-
-    document.querySelectorAll('.tone-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (btn.classList.contains('locked')) {
-                alert("Questa tonalità è esclusiva per utenti Premium!");
-                currentView = 'pricing';
-                render();
-                return;
-            }
-            selectedTone = btn.dataset.id;
-            render();
-        });
-    });
 }
 
 function renderPricing() {
@@ -143,7 +110,7 @@ function renderPricing() {
                 <div class="price-tag">2,99€</div>
                 <ul class="feature-list">
                     <li>✓ Risposte illimitate</li>
-                    <li>✓ Tutte le tonalità</li>
+                    <li>✓ Tutte le opzioni</li>
                 </ul>
                 <button class="btn-primary buy-btn" data-tier="premium">Attiva</button>
             </div>
@@ -152,7 +119,7 @@ function renderPricing() {
                 <div class="price-tag">4,99€</div>
                 <ul class="feature-list">
                     <li>✓ Tutto Premium</li>
-                    <li>✓ Analisi Psicologica AI</li>
+                    <li>✓ Analisi Psicologica</li>
                 </ul>
                 <button class="btn-primary buy-btn" data-tier="premium_plus" style="background: var(--premium-plus); color: white;">Attiva</button>
             </div>
@@ -208,7 +175,8 @@ function renderProfile() {
 }
 
 async function handleGenerate() {
-    const chatText = document.getElementById('chatInput').value.trim();
+    const chatInput = document.getElementById('chatInput');
+    const chatText = chatInput.value.trim();
     if (!chatText) return;
 
     const loading = document.getElementById('loading');
@@ -220,7 +188,7 @@ async function handleGenerate() {
     results.innerHTML = '';
 
     try {
-        const responses = await CopyChatStorage.generateInternalAIResponse(chatText, selectedTone, state.tier);
+        const responses = await CopyChatStorage.generateInternalAIResponse(chatText, 'gentle', state.tier);
         state.count += 1;
         CopyChatStorage.saveState(state);
 
@@ -228,9 +196,10 @@ async function handleGenerate() {
         btn.disabled = false;
 
         results.innerHTML = responses.map(resp => `
-            <div class="response-card">
+            <div class="response-card" style="border-left: 4px solid var(--primary);">
+                <div style="font-size: 0.6rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Stile: ${resp.label}</div>
                 <div class="copy-hint">Copia</div>
-                <p>${resp}</p>
+                <p style="margin: 0; line-height: 1.4;">${resp.text}</p>
             </div>
         `).join('');
     } catch (error) {
@@ -256,5 +225,7 @@ async function handleGoogleLogin() {
         CopyChatStorage.saveState(state);
         render();
     }
-    applyTheme();
-    render();
+}
+
+applyTheme();
+render();

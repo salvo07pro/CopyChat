@@ -59,29 +59,28 @@ const CopyChatStorage = {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         const context = CopyChatStorage.analyzeContext(chatText);
-
         const library = {
             greeting: {
-                gentle: ["Ehilà! Spero che tu stia passando una splendida giornata. 😊", "Ciao! Che piacere sentirti, come vanno le cose?", "Ehi! È sempre un piacere scambiare due chiacchiere con te."],
+                gentle: ["Ehilà! Spero che tu stia passando una splendida giornata.", "Ciao! Che piacere sentirti, come vanno le cose?", "Ehi! È sempre un piacere scambiare due chiacchiere con te."],
                 pro: ["Buongiorno. Confermo la ricezione del messaggio e resto in attesa.", "Saluti. Come posso assisterla professionalmente oggi?", "Buongiorno, procediamo pure con i punti della conversazione."],
-                funny: ["Ancora tu? Ma non ti stanchi mai di me? Scherzo! 😂", "Ehi! Il re della chat è tornato in città.", "Pura energia! Spara pure prima che mi dimentichi."],
+                funny: ["Ancora tu? Ma non ti stanchi mai di me? Scherzo!", "Ehi! Il re della chat è tornato in città.", "Pura energia! Spara pure prima che mi dimentichi."],
                 cold: ["Ricevuto. Sto ascoltando.", "Sì, dimmi.", "In attesa."]
             },
             conflict: {
-                gentle: ["Mi dispiace davvero molto sentirlo. Forse parlarne con calma aiuterebbe. ❤️", "Capisco che sia un momento di tensione. Io sono qui per te.", "Forse un po' di spazio ci farà bene a entrambi per riflettere."],
+                gentle: ["Mi dispiace davvero molto sentirlo. Forse parlarne con calma aiuterebbe.", "Capisco che sia un momento di tensione. Io sono qui per te.", "Forse un po' di spazio ci farà bene a entrambi per riflettere."],
                 pro: ["Prendo atto delle sue divergenze. Suggerisco un approccio più analitico.", "Valutiamo le opzioni disponibili per risolvere questo punto di attrito.", "Procediamo alla risoluzione del problema senza coinvolgimenti emotivi."],
-                funny: ["Uff, quanta drammaticità! Ma sorridi un po', la vita è bella!", "Oggi siamo decisamente in modalità soap opera, eh?", "Sei più difficile da gestire di un bug al lunedì mattina! 🎭"],
+                funny: ["Uff, quanta drammaticità! Ma sorridi un po', la vita è bella!", "Oggi siamo decisamente in modalità soap opera, eh?", "Sei più difficile da gestire di un bug al lunedì mattina!"],
                 cold: ["Va bene. Se questo è ciò che vuoi.", "Decisione registrata.", "Basta così."]
             },
             work: {
-                gentle: ["Certamente! Mi occupo subito di questa cosa, non preoccuparti. 😊", "Ottima idea sul progetto, ci lavoriamo insieme con calma.", "Ricevuto, ti do una mano volentieri con questa mail."],
+                gentle: ["Certamente! Mi occupo subito di questa cosa, non preoccuparti.", "Ottima idea sul progetto, ci lavoriamo insieme con calma.", "Ricevuto, ti do una mano volentieri con questa mail."],
                 pro: ["Ricevuto. Inserisco l'attività nel task manager per follow-up immediato.", "Procedo all'analisi del progetto come richiesto. Le invierò aggiornamenti.", "Confermo i dettagli. Sistemo la bozza e procedo all'invio professionale."],
-                funny: ["Lavoro? Ma non dovevamo andare ai tropici? 😂 Ok, procediamo.", "Sei un instancabile lavoratore! Dammi 2 minuti e sistemo tutto.", "Capo, il progetto è in mani sicure. Forse."],
+                funny: ["Lavoro? Ma non dovevamo andare ai tropici? Ok, procediamo.", "Sei un instancabile lavoratore! Dammi 2 minuti e sistemo tutto.", "Capo, il progetto è in mani sicure. Forse."],
                 cold: ["Ok. Procedo.", "Task ricevuto.", "In lavorazione."]
             },
             emotional: {
                 gentle: [
-                    "Anche tu mi manchi molto. Ogni momento lontano è un'attesa del nostro prossimo incontro. ❤️",
+                    "Anche tu mi manchi molto. Ogni momento lontano è un'attesa del nostro prossimo incontro.",
                     "Sei sempre nel mio cuore. Ti mando tutta la dolcezza del mondo.",
                     "Sentire la tua mancanza mi ricorda quanto sei speciale per me. Un abbraccio immenso.",
                     "Vorrei essere lì con te in questo momento. Mi manchi davvero tanto."
@@ -93,18 +92,18 @@ const CopyChatStorage = {
                     "È un onore sapere di mancarti. Farò il possibile per essere presente al più presto."
                 ],
                 funny: [
-                    "Ehi! Mi manchi già? Ma se sono l'unica cosa che vedi tutto il giorno! 😂",
-                    "Attenzione: rilevata mancanza acuta di carboidrati e di te! Urge rimedio immediato. 🚨",
+                    "Ehi! Mi manchi già? Ma se sono l'unica cosa che vedi tutto il giorno!",
+                    "Attenzione: rilevata mancanza acuta di carboidrati e di te! Urge rimedio immediato.",
                     "Sei un romanticone senza speranza! Ma confesso... anch'io un pochino.",
-                    "Ti manco così tanto? Mi farai montare la testa! 😎"
+                    "Ti manco così tanto? Mi farai montare la testa!"
                 ],
                 cold: ["Ricevuto. Lo so.", "Va bene.", "Capito.", "Sì, anche qui."]
             },
             general: {
                 gentle: [
-                    "Che bella cosa! Raccontami pure i dettagli, ti ascolto con tutto l'interesse del mondo. 😊",
+                    "Che bella cosa! Raccontami pure i dettagli, ti ascolto con tutto l'interesse del mondo.",
                     "Sembra un'ottima iniziativa, sono assolutamente d'accordo con te. Procediamo pure!",
-                    "Capisco perfettamente quello che provi, sembra una scelta molto saggia e ponderata.",
+                    "Capico perfettamente quello che provi, sembra una scelta molto saggia e ponderata.",
                     "Sono così felice di sentirti! Dimmi tutto, sono qui per darti supporto."
                 ],
                 pro: [
@@ -114,7 +113,7 @@ const CopyChatStorage = {
                     "Confermo la ricezione. Procederò ad elaborare una soluzione professionale ed efficiente."
                 ],
                 funny: [
-                    "Ma dai! Questa proprio non l'avevo mai sentita. Incredibile ma vero! 😂",
+                    "Ma dai! Questa proprio non l'avevo mai sentita. Incredibile ma vero!",
                     "Sei un vulcano di idee! Vediamo dove ci porterà questa nuova avventura oggi.",
                     "Ma che roba! Nemmeno nei fumetti di supereroi succederebbe una cosa simile.",
                     "Ma l'hai sognato di notte o sei un genio incompreso? Racconta tutto!"
@@ -124,24 +123,30 @@ const CopyChatStorage = {
         };
 
         const category = library[context.intent] || library.general;
-        const responses = category[tone] || category.gentle;
 
-        let finalResponses = [...responses];
+        // Always generate 4 responses, one for each tone
+        const finalResponses = ['gentle', 'pro', 'funny', 'cold'].map(t => {
+            const list = category[t] || category.gentle;
+            let resp = list[Math.floor(Math.random() * list.length)];
 
-        // Premium+ logic: Psychological Analysis
-        if (tier === 'premium_plus') {
-            const psycho = {
-                urgent: "[UnStuck Analysis: Stato di urgenza/ansia elevato]",
-                positive: "[UnStuck Analysis: Mood positivo ed entusiasta]",
-                negative: "[UnStuck Analysis: Tone deluso o critico]",
-                emotional: "[UnStuck Analysis: Forte legame affettivo/nostalgia]",
-                neutral: "[UnStuck Analysis: Comunicazione neutra/informativa]"
-            };
-            const prefix = psycho[context.intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
-            finalResponses = finalResponses.map(r => `${prefix} ${r}`);
-        }
+            if (tier === 'premium_plus') {
+                const psycho = {
+                    urgent: "[UnStuck Analysis: Stato di urgenza/ansia elevato]",
+                    positive: "[UnStuck Analysis: Mood positivo ed entusiasta]",
+                    negative: "[UnStuck Analysis: Tone deluso o critico]",
+                    emotional: "[UnStuck Analysis: Forte legame affettivo/nostalgia]",
+                    neutral: "[UnStuck Analysis: Comunicazione neutra/informativa]"
+                };
+                const prefix = psycho[context.intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
+                resp = `${prefix} ${resp}`;
+            }
 
-        return finalResponses.sort(() => 0.5 - Math.random()).slice(0, 3);
+            // Add a label for the user to understand the tone context
+            const labels = { gentle: 'Gentile', pro: 'Professionale', funny: 'Simpatico', cold: 'Distaccato' };
+            return { text: resp, label: labels[t] };
+        });
+
+        return finalResponses;
     }
 };
 
