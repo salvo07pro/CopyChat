@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">CopyChat</string>
-    <string name="title_activity_main">CopyChat</string>
-    <string name="package_name">com.salvo.copychat</string>
-    <string name="custom_url_scheme">com.salvo.copychat</string>
+    <string name="app_name">UnStuck</string>
+    <string name="title_activity_main">UnStuck</string>
+    <string name="package_name">com.salvo.unstuck</string>
+    <string name="custom_url_scheme">com.salvo.unstuck</string>
 </resources>

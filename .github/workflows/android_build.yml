@@ -35,14 +35,20 @@ jobs:
       - name: Capacitor Sync
         run: npx cap sync android
 
-      - name: Build with Gradle
+      - name: Build APK (for direct install)
         run: |
           cd android
-          chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Build AAB (for Play Store)
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: UnStuck-Builds
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/bundle/release/app-release.aab

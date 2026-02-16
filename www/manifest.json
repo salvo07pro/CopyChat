@@ -1,7 +1,7 @@
 {
-    "short_name": "CopyChatt",
-    "name": "CopyChatt - Smart Responses",
-    "description": "Risposte intelligenti generate dall'intelligenza proprietaria CopyChatt.",
+    "short_name": "UnStuck",
+    "name": "UnStuck - Smart Responses",
+    "description": "Sbloccati subito con risposte intelligenti generate dall'intelligenza proprietaria UnStuck.",
     "icons": [
         {
             "src": "public/logo.jpg",
@@ -19,6 +19,6 @@
     "background_color": "#020617",
     "display": "standalone",
     "scope": "/",
-    "theme_color": "#10b981",
+    "theme_color": "#3b82f6",
     "orientation": "portrait"
 }

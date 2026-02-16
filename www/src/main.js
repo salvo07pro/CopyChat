@@ -12,9 +12,9 @@ const TONES = [
 
 const LOGO_SVG = `
 <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 10px;">
-  <rect width="100" height="100" rx="25" fill="#10B981"/>
-  <path d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H50L35 75V60C32.2386 60 30 57.7614 30 55V35Z" fill="#020617"/>
-  <path d="M42 40L52 50L42 60" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="100" height="100" rx="25" fill="#3B82F6"/>
+  <path d="M30 50C30 38.9543 38.9543 30 50 30H70V45C70 56.0457 61.0457 65 50 65H30V50Z" fill="#020617"/>
+  <path d="M45 40L55 50L45 60" stroke="#3B82F6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
 function render() {
@@ -35,8 +35,8 @@ function renderRegistration() {
             <div class="logo-svg-container" style="margin-bottom: 24px; filter: drop-shadow(0 0 15px var(--primary-glow));">
                 ${LOGO_SVG.replace('width="40" height="40"', 'width="120" height="120"')}
             </div>
-            <h1 style="font-size: 2.2rem; margin-bottom: 8px;">CopyChatt</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 32px;">Intelligenza proprietaria. Senza limiti.</p>
+            <h1 style="font-size: 2.2rem; margin-bottom: 8px;">UnStuck</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 32px;">Sbloccati subito. Risposte smart istantanee.</p>
             
             <button id="btnGoogleLogin" class="btn-google">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_Logo.svg" style="width:20px" alt="G">
@@ -62,7 +62,7 @@ function renderMainApp() {
         <header class="header">
             <div class="brand-container">
                 <div style="transform: scale(0.8); margin-left: -5px;">${LOGO_SVG}</div>
-                <h1 style="font-size: 1.2rem;">CopyChatt</h1>
+                <h1 style="font-size: 1.2rem;">UnStuck</h1>
             </div>
             <div class="profile-trigger" id="profileTrigger">
                 ${state.tier !== 'base' ? '<span style="color:var(--premium); font-size:0.8rem;">👑</span>' : ''}
@@ -135,7 +135,7 @@ function renderPricing() {
     app.innerHTML = `
         <header class="header">
             <div style="cursor:pointer" id="backFromPricing">← Torna</div>
-            <h1>Piani CopyChatt</h1>
+            <h1>Piani UnStuck</h1>
         </header>
         <div class="pricing-container">
             <div class="pricing-card premium">
@@ -169,21 +169,42 @@ function renderPricing() {
     });
 }
 
+function applyTheme() {
+    if (state.theme === 'light') {
+        document.body.classList.add('light-theme');
+    } else {
+        document.body.classList.remove('light-theme');
+    }
+}
+
 function renderProfile() {
     app.innerHTML = `
         <div style="padding: 20px 0; cursor:pointer" id="backFromProfile">← Profilo</div>
-        <div class="profile-header" style="text-align:center;">
+        <div class="profile-header" style="text-align:center; margin-bottom: 32px;">
             <div class="profile-avatar-large" style="margin: 0 auto 15px;">${state.user.name.charAt(0)}</div>
-            <h2>${state.user.name}</h2>
-            <p style="color:var(--text-secondary)">${state.user.email}</p>
+            <h2 style="font-size: 1.5rem;">${state.user.name}</h2>
+            <p style="color:var(--text-muted); font-size: 0.9rem;">${state.user.email}</p>
         </div>
-        <div class="profile-info-row" style="margin-top:20px;"><span>Piano</span><span>${state.tier.toUpperCase()}</span></div>
-        <button id="goToPricingFromProfile" class="btn-primary" style="margin-top: 20px; background: var(--secondary); color: white;">Gestisci Abbonamento</button>
-        <button id="btnLogout" class="btn-logout">Esci</button>
+
+        <div class="theme-switch-row">
+            <span>Tema Chiaro</span>
+            <div class="toggle-pill" id="themeToggle"></div>
+        </div>
+
+        <div class="profile-info-row"><span>Piano</span><span style="font-weight:700;">${state.tier.toUpperCase()}</span></div>
+        <button id="goToPricingFromProfile" class="btn-primary" style="margin-top: 32px; background: var(--surface); color: var(--text-main); border: 1px solid var(--card-border); box-shadow: none;">Gestisci Abbonamento</button>
+        <button id="btnLogout" class="btn-logout">Esci dall'account</button>
     `;
     document.getElementById('backFromProfile').addEventListener('click', () => { currentView = 'main'; render(); });
     document.getElementById('goToPricingFromProfile').addEventListener('click', () => { currentView = 'pricing'; render(); });
     document.getElementById('btnLogout').addEventListener('click', () => { state.user = null; CopyChatStorage.saveState(state); render(); });
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        state.theme = state.theme === 'light' ? 'dark' : 'light';
+        CopyChatStorage.saveState(state);
+        applyTheme();
+        render();
+    });
 }
 
 async function handleGenerate() {
@@ -198,19 +219,26 @@ async function handleGenerate() {
     loading.style.display = 'block';
     results.innerHTML = '';
 
-    const responses = await CopyChatStorage.generateInternalAIResponse(chatText, selectedTone, state.tier);
-    state.count += 1;
-    CopyChatStorage.saveState(state);
+    try {
+        const responses = await CopyChatStorage.generateInternalAIResponse(chatText, selectedTone, state.tier);
+        state.count += 1;
+        CopyChatStorage.saveState(state);
 
-    loading.style.display = 'none';
-    btn.disabled = false;
+        loading.style.display = 'none';
+        btn.disabled = false;
 
-    results.innerHTML = responses.map(resp => `
-        <div class="response-card">
-            <div class="copy-hint">Copia</div>
-            <p>${resp}</p>
-        </div>
-    `).join('');
+        results.innerHTML = responses.map(resp => `
+            <div class="response-card">
+                <div class="copy-hint">Copia</div>
+                <p>${resp}</p>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error("Errore generazione:", error);
+        loading.style.display = 'none';
+        btn.disabled = false;
+        results.innerHTML = `<p style="color: var(--error); text-align: center;">Errore: Non riesco a generare la risposta. Riprova.</p>`;
+    }
 
     document.querySelectorAll('.response-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -228,6 +256,5 @@ async function handleGoogleLogin() {
         CopyChatStorage.saveState(state);
         render();
     }
-}
-
-render();
+    applyTheme();
+    render();

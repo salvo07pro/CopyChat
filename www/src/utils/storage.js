@@ -6,6 +6,7 @@ const CopyChatStorage = {
             count: 0,
             date: new Date().toLocaleDateString(),
             tier: 'base',
+            theme: 'dark',
             history: []
         };
         const parsed = JSON.parse(data);
@@ -130,13 +131,13 @@ const CopyChatStorage = {
         // Premium+ logic: Psychological Analysis
         if (tier === 'premium_plus') {
             const psycho = {
-                urgent: "[AI Analysis: Stato di urgenza/ansia elevato]",
-                positive: "[AI Analysis: Mood positivo ed entusiasta]",
-                negative: "[AI Analysis: Tone deluso o critico]",
-                emotional: "[AI Analysis: Forte legame affettivo/nostalgia]",
-                neutral: "[AI Analysis: Comunicazione neutra/informativa]"
+                urgent: "[UnStuck Analysis: Stato di urgenza/ansia elevato]",
+                positive: "[UnStuck Analysis: Mood positivo ed entusiasta]",
+                negative: "[UnStuck Analysis: Tone deluso o critico]",
+                emotional: "[UnStuck Analysis: Forte legame affettivo/nostalgia]",
+                neutral: "[UnStuck Analysis: Comunicazione neutra/informativa]"
             };
-            const prefix = psycho[intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
+            const prefix = psycho[context.intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
             finalResponses = finalResponses.map(r => `${prefix} ${r}`);
         }
 
