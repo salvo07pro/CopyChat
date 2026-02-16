@@ -36,7 +36,8 @@ const CopyChatStorage = {
         let intent = 'general';
 
         // Intent detection
-        if (lower.includes('lasciare') || lower.includes('basta') || lower.includes('odio') || lower.includes('arrabbiato')) intent = 'conflict';
+        if (lower.includes('manchi') || lower.includes('amore') || lower.includes('ti amo') || lower.includes('cuore')) intent = 'emotional';
+        else if (lower.includes('lasciare') || lower.includes('basta') || lower.includes('odio') || lower.includes('arrabbiato')) intent = 'conflict';
         else if (lower.includes('giocare') || lower.includes('game') || lower.includes('partita')) intent = 'gaming';
         else if (lower.includes('invito') || lower.includes('uscire') || lower.includes('cena')) intent = 'invitation';
         else if (lower.includes('lavoro') || lower.includes('mail') || lower.includes('progetto')) intent = 'work';
@@ -77,11 +78,47 @@ const CopyChatStorage = {
                 funny: ["Lavoro? Ma non dovevamo andare ai tropici? 😂 Ok, procediamo.", "Sei un instancabile lavoratore! Dammi 2 minuti e sistemo tutto.", "Capo, il progetto è in mani sicure. Forse."],
                 cold: ["Ok. Procedo.", "Task ricevuto.", "In lavorazione."]
             },
+            emotional: {
+                gentle: [
+                    "Anche tu mi manchi molto. Ogni momento lontano è un'attesa del nostro prossimo incontro. ❤️",
+                    "Sei sempre nel mio cuore. Ti mando tutta la dolcezza del mondo.",
+                    "Sentire la tua mancanza mi ricorda quanto sei speciale per me. Un abbraccio immenso.",
+                    "Vorrei essere lì con te in questo momento. Mi manchi davvero tanto."
+                ],
+                pro: [
+                    "Apprezzo sinceramente il tuo pensiero e i sentimenti che condividi. La tua presenza è fondamentale.",
+                    "La tua vicinanza ha un valore inestimabile per me. Spero di poter ricambiare presto il tuo affetto.",
+                    "Ti ringrazio per la tua onestà emotiva. Resto a tua disposizione con tutto il mio supporto.",
+                    "È un onore sapere di mancarti. Farò il possibile per essere presente al più presto."
+                ],
+                funny: [
+                    "Ehi! Mi manchi già? Ma se sono l'unica cosa che vedi tutto il giorno! 😂",
+                    "Attenzione: rilevata mancanza acuta di carboidrati e di te! Urge rimedio immediato. 🚨",
+                    "Sei un romanticone senza speranza! Ma confesso... anch'io un pochino.",
+                    "Ti manco così tanto? Mi farai montare la testa! 😎"
+                ],
+                cold: ["Ricevuto. Lo so.", "Va bene.", "Capito.", "Sì, anche qui."]
+            },
             general: {
-                gentle: ["Che bella cosa! Raccontami pure i dettagli, ti ascolto.", "Sembra un'ottima iniziativa, sono d'accordo con te.", "Capisco perfettamente, sembra una scelta molto saggia."],
-                pro: ["Punto interessante. Valutiamo l'efficacia di questa proposta.", "Procediamo con la pianificazione di questo specifico argomento.", "Analisi in corso. Suggerisco di approfondire gli aspetti tecnici."],
-                funny: ["Ma dai! Questa proprio non l'avevo mai sentita. Incredibile! 😂", "Sei un vulcano di idee! Vediamo dove ci porterà questa.", "Ma che roba! Nemmeno nei fumetti succede questo."],
-                cold: ["Capito.", "Visto.", "Ok."]
+                gentle: [
+                    "Che bella cosa! Raccontami pure i dettagli, ti ascolto con tutto l'interesse del mondo. 😊",
+                    "Sembra un'ottima iniziativa, sono assolutamente d'accordo con te. Procediamo pure!",
+                    "Capisco perfettamente quello che provi, sembra una scelta molto saggia e ponderata.",
+                    "Sono così felice di sentirti! Dimmi tutto, sono qui per darti supporto."
+                ],
+                pro: [
+                    "Punto estremamente interessante. Valutiamo attentamente l'efficacia di questa proposta.",
+                    "Procediamo con la pianificazione strategica di questo specifico argomento per massimizzare i risultati.",
+                    "Analisi in corso. Suggerisco di approfondire gli aspetti tecnici e operativi della questione.",
+                    "Confermo la ricezione. Procederò ad elaborare una soluzione professionale ed efficiente."
+                ],
+                funny: [
+                    "Ma dai! Questa proprio non l'avevo mai sentita. Incredibile ma vero! 😂",
+                    "Sei un vulcano di idee! Vediamo dove ci porterà questa nuova avventura oggi.",
+                    "Ma che roba! Nemmeno nei fumetti di supereroi succederebbe una cosa simile.",
+                    "Ma l'hai sognato di notte o sei un genio incompreso? Racconta tutto!"
+                ],
+                cold: ["Capito.", "Visto.", "Ok.", "Procedi."]
             }
         };
 
@@ -93,12 +130,13 @@ const CopyChatStorage = {
         // Premium+ logic: Psychological Analysis
         if (tier === 'premium_plus') {
             const psycho = {
-                urgent: "[Analisi: Stress elevato, richiede risposta rapida]",
-                positive: "[Analisi: Clima disteso, interazione molto favorevole]",
-                negative: "[Analisi: Possibile conflitto latente o malessere]",
-                neutral: "[Analisi: Comunicazione funzionale standard]"
+                urgent: "[AI Analysis: Stato di urgenza/ansia elevato]",
+                positive: "[AI Analysis: Mood positivo ed entusiasta]",
+                negative: "[AI Analysis: Tone deluso o critico]",
+                emotional: "[AI Analysis: Forte legame affettivo/nostalgia]",
+                neutral: "[AI Analysis: Comunicazione neutra/informativa]"
             };
-            const prefix = psycho[context.sentiment] || psycho.neutral;
+            const prefix = psycho[intent === 'emotional' ? 'emotional' : context.sentiment] || psycho.neutral;
             finalResponses = finalResponses.map(r => `${prefix} ${r}`);
         }
 

@@ -27,18 +27,6 @@
                     .catch(err => console.log('SW Error', err));
             });
         }
-
-        // Check if scripts loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof CopyChatStorage === 'undefined') {
-                document.getElementById('app').innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: white; background: #020617; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
-                        <h2 style="color: #ef4444;">Errore di Caricamento</h2>
-                        <p style="color: #94a3b8; margin-top: 10px;">Non riesco a caricare i file di logica. Se stai aprendo il file direttamente dal computer, prova a usare un server locale (come Live Server di VS Code) o compila per Android.</p>
-                    </div>
-                `;
-            }
-        });
     </script>
 </body>
 

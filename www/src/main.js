@@ -10,6 +10,13 @@ const TONES = [
     { id: 'cold', label: 'Freddo', icon: '❄️', premium: true }
 ];
 
+const LOGO_SVG = `
+<svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 10px;">
+  <rect width="100" height="100" rx="25" fill="#10B981"/>
+  <path d="M30 35C30 32.2386 32.2386 30 35 30H65C67.7614 30 70 32.2386 70 35V55C70 57.7614 67.7614 60 65 60H50L35 75V60C32.2386 60 30 57.7614 30 55V35Z" fill="#020617"/>
+  <path d="M42 40L52 50L42 60" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
 function render() {
     if (!state.user) {
         renderRegistration();
@@ -25,7 +32,9 @@ function render() {
 function renderRegistration() {
     app.innerHTML = `
         <div class="onboarding-screen">
-            <img src="public/logo.jpg" alt="Logo" class="logo-img" onerror="this.src='https://placehold.co/120x120?text=Logo'">
+            <div class="logo-svg-container" style="margin-bottom: 24px; filter: drop-shadow(0 0 15px var(--primary-glow));">
+                ${LOGO_SVG.replace('width="40" height="40"', 'width="120" height="120"')}
+            </div>
             <h1 style="font-size: 2.2rem; margin-bottom: 8px;">CopyChatt</h1>
             <p style="color: var(--text-secondary); margin-bottom: 32px;">Intelligenza proprietaria. Senza limiti.</p>
             
@@ -52,10 +61,11 @@ function renderMainApp() {
     app.innerHTML = `
         <header class="header">
             <div class="brand-container">
-                <img src="public/logo.jpg" alt="Logo" class="logo-img-small" onerror="this.style.display='none'">
+                <div style="transform: scale(0.8); margin-left: -5px;">${LOGO_SVG}</div>
                 <h1 style="font-size: 1.2rem;">CopyChatt</h1>
             </div>
             <div class="profile-trigger" id="profileTrigger">
+                ${state.tier !== 'base' ? '<span style="color:var(--premium); font-size:0.8rem;">👑</span>' : ''}
                 <div style="width:20px; height:20px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-size:0.6rem; font-weight:800;">
                     ${state.user.name.charAt(0)}
                 </div>
@@ -168,9 +178,11 @@ function renderProfile() {
             <p style="color:var(--text-secondary)">${state.user.email}</p>
         </div>
         <div class="profile-info-row" style="margin-top:20px;"><span>Piano</span><span>${state.tier.toUpperCase()}</span></div>
+        <button id="goToPricingFromProfile" class="btn-primary" style="margin-top: 20px; background: var(--secondary); color: white;">Gestisci Abbonamento</button>
         <button id="btnLogout" class="btn-logout">Esci</button>
     `;
     document.getElementById('backFromProfile').addEventListener('click', () => { currentView = 'main'; render(); });
+    document.getElementById('goToPricingFromProfile').addEventListener('click', () => { currentView = 'pricing'; render(); });
     document.getElementById('btnLogout').addEventListener('click', () => { state.user = null; CopyChatStorage.saveState(state); render(); });
 }
 
