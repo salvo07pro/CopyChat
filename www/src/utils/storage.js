@@ -7,6 +7,8 @@ const CopyChatStorage = {
             date: new Date().toLocaleDateString(),
             tier: 'base',
             theme: 'dark',
+            botStyle: 'default',
+            geminiKey: '',
             history: []
         };
         const parsed = JSON.parse(data);
@@ -52,6 +54,30 @@ const CopyChatStorage = {
         else if (lower.includes('no') || lower.includes('triste') || lower.includes('male')) sentiment = 'negative';
 
         return { intent, sentiment };
+    },
+
+    BOT_STYLES: {
+        default: { name: "UnStuck", prefix: "", suffix: "" },
+        fortnite: { name: "Fortnite", prefix: "[Victory Royale] ", suffix: " #Loot" },
+        minecraft: { name: "Minecraft", prefix: "[Crafting] ", suffix: " *creeper sound*" },
+        rocket: { name: "Rocket League", prefix: "[Goal!] ", suffix: " #Boost" },
+        gta: { name: "GTA V", prefix: "[Mission Passed] ", suffix: " $1.000.000" },
+        fifa: { name: "FC24", prefix: "[GOL!] ", suffix: " +3 Punti" },
+        elon: { name: "Elon Musk", prefix: "[X] ", suffix: " #Mars" },
+        ironman: { name: "Iron Man", prefix: "Jarvis, ", suffix: " - Fine trasmissione" },
+        spiderman: { name: "Spider-Man", prefix: "Ehi, ", suffix: " #Spidey" },
+        joker: { name: "Joker", prefix: "Perché sei così serio? ", suffix: " *hahaha*" },
+        cr7: { name: "CR7", prefix: "SIUUU! ", suffix: " #IlMigliore" },
+        messi: { name: "Messi", prefix: "Hola, ", suffix: " #GOAT" },
+        jobs: { name: "Steve Jobs", prefix: "Stay hungry, ", suffix: " #ThinkDifferent" },
+        batman: { name: "Batman", prefix: "Sono la notte. ", suffix: " #Giustizia" },
+        sherlock: { name: "Sherlock", prefix: "Elementare, ", suffix: " #Indizio" },
+        pirate: { name: "Pirata", prefix: "Arrr, ", suffix: " #Tesoro" },
+        viking: { name: "Vichingo", prefix: "Per il Valhalla! ", suffix: " #Ascia" },
+        samurai: { name: "Samurai", prefix: "Onore. ", suffix: " #Bushido" },
+        chef: { name: "Chef", prefix: "Manca sale, ", suffix: " #Gusto" },
+        rapper: { name: "Rapper", prefix: "Ehi yo, ", suffix: " #Trap" },
+        robot: { name: "Robot", prefix: "Beep Boop. ", suffix: " #Logic" }
     },
 
     // Internal Intelligence Response Generation (No API Key Required)
@@ -149,12 +175,67 @@ const CopyChatStorage = {
                 analysis = psycho[context.intent] || psycho[context.sentiment] || psycho.neutral;
             }
 
+            // Apply Bot Style Transform
+            const state = CopyChatStorage.getStorageData();
+            const botStyle = CopyChatStorage.BOT_STYLES[state.botStyle] || CopyChatStorage.BOT_STYLES.default;
+
+            let finalText = `${botStyle.prefix}${resp}${botStyle.suffix}`;
+
             // Add a label for the user to understand the tone context
             const labels = { gentle: 'Gentile', pro: 'Professionale', funny: 'Simpatico', cold: 'Distaccato' };
-            return { text: resp, label: labels[t], analysis: analysis };
+            return { text: finalText, label: labels[t], analysis: analysis };
         });
 
         return finalResponses;
+    },
+
+    generateGeminiResponse: async (chatText, botStyle, tier) => {
+        const state = CopyChatStorage.getStorageData();
+        if (!state.geminiKey) throw new Error("API Key missing");
+
+        const prompt = `
+            Sei un assistente AI super intelligente chiamato UnStuck.
+            Devi analizzare questo messaggio: "${chatText}"
+            
+            RISPONDI ESCLUSIVAMENTE IN FORMATO JSON VALIDO con questa struttura:
+            {
+                "analysis": "Breve analisi psicologica del messaggio (max 10 parole)",
+                "responses": {
+                    "gentle": "Risposta in stile gentile",
+                    "pro": "Risposta in stile professionale",
+                    "funny": "Risposta in stile simpatico",
+                    "cold": "Risposta in stile distaccato"
+                }
+            }
+
+            REGOLE CRITICHE:
+            1. Usa la personalità: "${botStyle.name}". (Prefisso: ${botStyle.prefix}, Suffisso: ${botStyle.suffix})
+            2. NON USARE EMOJI.
+            3. Lingua: Italiano.
+            4. Se lo stile è Fortnite/Minecraft/ecc, usa il loro gergo specifico nel testo.
+        `;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${state.geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { response_mime_type: "application/json" }
+            })
+        });
+
+        if (!response.ok) throw new Error("Gemini API Error");
+        const data = await response.json();
+        const result = JSON.parse(data.candidates[0].content.parts[0].text);
+
+        return ['gentle', 'pro', 'funny', 'cold'].map(t => {
+            const labels = { gentle: 'Gentile', pro: 'Professionale', funny: 'Simpatico', cold: 'Distaccato' };
+            return {
+                text: `${botStyle.prefix}${result.responses[t]}${botStyle.suffix}`,
+                label: labels[t],
+                analysis: tier === 'premium_plus' ? result.analysis : null
+            };
+        });
     }
 };
 

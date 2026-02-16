@@ -66,6 +66,28 @@ function renderMainApp() {
         </header>
 
         <main style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+            <div style="margin-bottom: 5px;">
+                <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; display: block; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Personalità Bot</label>
+                <div class="style-selector" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none;">
+                    ${Object.entries(CopyChatStorage.BOT_STYLES).map(([id, style]) => `
+                        <div class="style-chip ${state.botStyle === id ? 'active' : ''}" data-id="${id}" style="
+                            flex: 0 0 auto;
+                            padding: 8px 16px;
+                            background: ${state.botStyle === id ? 'var(--primary-glow)' : 'var(--surface)'};
+                            border: 1px solid ${state.botStyle === id ? 'var(--primary)' : 'var(--card-border)'};
+                            border-radius: 100px;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            color: ${state.botStyle === id ? 'var(--primary)' : 'var(--text-muted)'};
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        ">
+                            ${style.name}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
             <section class="input-container">
                 <textarea id="chatInput" placeholder="Incolla qui il messaggio a cui vuoi rispondere..."></textarea>
                 <div id="loading" style="display: none; height:4px; background:rgba(255,255,255,0.05); margin-top:10px; border-radius:2px; overflow:hidden;">
@@ -96,6 +118,14 @@ function renderMainApp() {
     if (document.getElementById('goToPricing')) {
         document.getElementById('goToPricing').addEventListener('click', () => { currentView = 'pricing'; render(); });
     }
+
+    document.querySelectorAll('.style-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            state.botStyle = chip.dataset.id;
+            CopyChatStorage.saveState(state);
+            render();
+        });
+    });
 }
 
 function renderPricing() {
@@ -158,13 +188,27 @@ function renderProfile() {
             <div class="toggle-pill" id="themeToggle"></div>
         </div>
 
-        <div class="profile-info-row"><span>Piano</span><span style="font-weight:700;">${state.tier.toUpperCase()}</span></div>
+        <div style="margin-top: 24px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--card-border);">
+            <label style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; font-weight: 700;">Gemini API Key (Super IA)</label>
+            <input type="password" id="geminiKey" class="input-box" style="width: 100%; padding: 12px; font-size: 0.8rem; margin-bottom: 10px;" placeholder="Incolla qui la tua API Key..." value="${state.geminiKey || ''}">
+            <button id="btnSaveKey" class="btn-primary" style="padding: 8px 16px; font-size: 0.75rem; width: auto;">Salva Chiave</button>
+            <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 8px;">Ottieni una chiave gratuita su Google AI Studio per sbloccare la Super Intelligenza.</p>
+        </div>
+
+        <div class="profile-info-row" style="margin-top: 24px;"><span>Piano</span><span style="font-weight:700;">${state.tier.toUpperCase()}</span></div>
         <button id="goToPricingFromProfile" class="btn-primary" style="margin-top: 32px; background: var(--surface); color: var(--text-main); border: 1px solid var(--card-border); box-shadow: none;">Gestisci Abbonamento</button>
         <button id="btnLogout" class="btn-logout">Esci dall'account</button>
     `;
     document.getElementById('backFromProfile').addEventListener('click', () => { currentView = 'main'; render(); });
     document.getElementById('goToPricingFromProfile').addEventListener('click', () => { currentView = 'pricing'; render(); });
     document.getElementById('btnLogout').addEventListener('click', () => { state.user = null; CopyChatStorage.saveState(state); render(); });
+
+    document.getElementById('btnSaveKey').addEventListener('click', () => {
+        const key = document.getElementById('geminiKey').value.trim();
+        state.geminiKey = key;
+        CopyChatStorage.saveState(state);
+        alert("Chiave API salvata! Super Intelligenza attivata.");
+    });
 
     document.getElementById('themeToggle').addEventListener('click', () => {
         state.theme = state.theme === 'light' ? 'dark' : 'light';
@@ -188,7 +232,22 @@ async function handleGenerate() {
     results.innerHTML = '';
 
     try {
-        const responses = await CopyChatStorage.generateInternalAIResponse(chatText, 'gentle', state.tier);
+        let responses;
+        const botStyle = CopyChatStorage.BOT_STYLES[state.botStyle] || CopyChatStorage.BOT_STYLES.default;
+
+        if (state.geminiKey) {
+            try {
+                console.log("Using Super Intelligence (Gemini)...");
+                responses = await CopyChatStorage.generateGeminiResponse(chatText, botStyle, state.tier);
+            } catch (e) {
+                console.warn("Gemini Failed, falling back to local engine:", e);
+                responses = await CopyChatStorage.generateInternalAIResponse(chatText, 'gentle', state.tier);
+            }
+        } else {
+            console.log("Using Internal Engine...");
+            responses = await CopyChatStorage.generateInternalAIResponse(chatText, 'gentle', state.tier);
+        }
+
         state.count += 1;
         CopyChatStorage.saveState(state);
 
